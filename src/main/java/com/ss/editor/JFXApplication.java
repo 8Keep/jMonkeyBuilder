@@ -10,7 +10,6 @@ import com.ss.editor.ui.builder.EditorFXSceneBuilder;
 import com.ss.editor.ui.scene.EditorFXScene;
 import com.ss.editor.util.Semaphore;
 import com.ss.rlib.manager.InitializeManager;
-import de.codecentric.centerdevice.javafxsvg.SvgImageLoaderFactory;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.stage.Stage;
@@ -67,8 +66,6 @@ public class JFXApplication extends Application {
         // unlock this semaphore for other waiting threads (initialization and loading)
         JFXApplication.semaphore.unlock(JFXApplication.mutex);
         this.stage = stage;
-
-        SvgImageLoaderFactory.install();
 
         final EditorConfig setupConfig = setupDefaultStageConfig(stage);
         observeWindowChanges(setupConfig);

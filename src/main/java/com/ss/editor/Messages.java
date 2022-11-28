@@ -1,10 +1,9 @@
 package com.ss.editor;
 
-import static java.util.ResourceBundle.getBundle;
-import static com.ss.rlib.util.ReflectionUtils.getUnsafeFieldValue;
-import com.sun.javafx.scene.control.skin.resources.ControlResources;
 import com.ss.rlib.util.PropertyLoader;
 
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -2286,21 +2285,21 @@ public class Messages {
     static {
 
         final Locale locale = Locale.getDefault();
-        final ClassLoader classLoader = ControlResources.class.getClassLoader();
+        final ClassLoader classLoader = Messages.class.getClassLoader();
 
-        final ResourceBundle controlBundle = getBundle("com/sun/javafx/scene/control/skin/resources/controls",
+        final ResourceBundle controlBundle = ResourceBundle.getBundle("com/sun/javafx/scene/control/skin/resources/controls",
                 locale, classLoader, PropertyLoader.getInstance());
 
-        final ResourceBundle overrideBundle = getBundle("com/sun/javafx/scene/control/skin/resources/controls",
+        final ResourceBundle overrideBundle = ResourceBundle.getBundle("com/sun/javafx/scene/control/skin/resources/controls",
                 PropertyLoader.getInstance());
 
-        final Map override = getUnsafeFieldValue(overrideBundle, "lookup");
-        final Map original = getUnsafeFieldValue(controlBundle, "lookup");
+        final Map<String, String> override = convertResourceBundleToMap(overrideBundle);
+        final Map<String, String> original = convertResourceBundleToMap(controlBundle);
 
         //noinspection ConstantConditions,ConstantConditions,unchecked
         original.putAll(override);
 
-        final ResourceBundle bundle = getBundle(BUNDLE_NAME, PropertyLoader.getInstance());
+        final ResourceBundle bundle = ResourceBundle.getBundle(BUNDLE_NAME, PropertyLoader.getInstance());
 
         EDITOR_MENU_FILE = bundle.getString("EditorMenuFile");
         EDITOR_MENU_FILE_OPEN_ASSET = bundle.getString("EditorMenuFileOpenAsset");
@@ -2913,5 +2912,15 @@ public class Messages {
         ABOUT_DIALOG_BUTTON_OK = bundle.getString("AboutDialogButtonOk");
 
         RESOURCE_PROPERTY_EDIT_CONTROL_NOTHING_IS_SELECTED = bundle.getString("ResourcePropertyEditControlNothingIsSelected");
+    }
+
+    private static Map<String, String> convertResourceBundleToMap(ResourceBundle resource) {
+        Map<String, String> map = new HashMap<>();
+        Enumeration<String> keys = resource.getKeys();
+        while (keys.hasMoreElements()) {
+            String key = keys.nextElement();
+            map.put(key, resource.getString(key));
+        }
+        return map;
     }
 }

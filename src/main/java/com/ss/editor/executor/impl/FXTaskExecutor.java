@@ -3,7 +3,7 @@ package com.ss.editor.executor.impl;
 import com.ss.editor.annotation.FXThread;
 import com.ss.editor.annotation.FromAnyThread;
 import com.ss.editor.util.EditorUtil;
-import com.sun.javafx.application.PlatformImpl;
+import javafx.application.Platform;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -32,7 +32,7 @@ public class FXTaskExecutor extends AbstractTaskExecutor {
     public FXTaskExecutor() {
         setName(FXTaskExecutor.class.getSimpleName());
         setPriority(NORM_PRIORITY);
-        PlatformImpl.startup(this::start);
+        //Platform.startup(this::start);
     }
 
     @Override
@@ -108,7 +108,7 @@ public class FXTaskExecutor extends AbstractTaskExecutor {
     private void executeInFXUIThread() {
         while (true) {
             try {
-                PlatformImpl.runAndWait(fxTask);
+                Platform.runLater(fxTask);
                 break;
             } catch (final IllegalStateException e) {
                 LOGGER.warning(this, e);

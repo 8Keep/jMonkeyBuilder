@@ -18,10 +18,15 @@ import javafx.scene.image.PixelReader;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
+import javafx.embed.swing.SwingFXUtils;
+
+import org.apache.batik.transcoder.TranscoderException;
+import org.apache.batik.transcoder.TranscoderInput;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -298,9 +303,22 @@ public class FileIconManager {
     public Image getOriginal(@NotNull final Image image) {
 
         if (!(image instanceof WritableImage)) {
-            throw new IllegalArgumentException("The image " + image.impl_getUrl() + " wasn't edited");
+            throw new IllegalArgumentException("The image " + image.getUrl() + " wasn't edited");
         }
 
-        return notNull(originalImageCache.get(image), "not found original for " + image.impl_getUrl());
+        return notNull(originalImageCache.get(image), "not found original for " + image.getUrl());
+    }
+
+    private Image convertFromSVG(@NotNull InputStream file ) {
+        Image image;
+        BufferedImageTranscoder transcoder = new BufferedImageTranscoder();
+        TranscoderInput transcoderIn = new TranscoderInput(file);
+        try {
+            transcoder.transcode(transcoderIn, null);
+        } catch (TranscoderException ex) {
+            ex.printStackTrace();
+        }
+        image = SwingFXUtils.toFXImage(transcoder.getBufferedImage(), null);
+        return notNull(image, "Image couldn't be converted from svg");
     }
 }

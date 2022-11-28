@@ -1,5 +1,7 @@
 plugins {
     id 'java'
+    id 'application'
+    id 'org.openjfx.javafxplugin' version '0.0.13'
 }
 String engineVersion = "3.5.1-stable"
 group 'org.scrappers'
@@ -8,6 +10,19 @@ version '1.0-RM-VERSION'
 repositories {
     mavenCentral()
     maven { url 'https://jcenter.bintray.com' } // for SimMath
+}
+
+javafx {
+    version = "19"
+    modules = [
+        'javafx.controls',
+        'javafx.base',
+        'javafx.graphics',
+        'javafx.swing',
+        'javafx.fxml',
+        'javafx.media',
+        'javafx.web'
+    ]
 }
 
 dependencies {
@@ -31,6 +46,10 @@ dependencies {
     implementation "org.jmonkeyengine:jme3-lwjgl3:$engineVersion"
     implementation "org.jmonkeyengine:jme3-plugins:$engineVersion"
 
+}
+
+application {
+    mainClass = 'com.ss.editor.Launcher' 
 }
 
 test {

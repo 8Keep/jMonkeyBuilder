@@ -28,7 +28,7 @@ public class ExecutorManager {
     private static final Logger LOGGER = LoggerManager.getLogger(ExecutorManager.class);
     private static final Runtime RUNTIME = Runtime.getRuntime();
     private static final int PROP_BACKGROUND_TASK_EXECUTORS = RUNTIME.availableProcessors();
-    private static ExecutorManager instance;
+    private volatile static ExecutorManager instance;
     private final ScheduledExecutorService scheduledExecutorService;
     private final TaskExecutor[] backgroundTaskExecutors;
     private final GLTaskExecutor editorGLTaskExecutor;
@@ -36,6 +36,8 @@ public class ExecutorManager {
     private final AtomicInteger nextBackgroundTaskExecutor;
     public static EditorThread GL_THREAD;
     public static EditorThread JFX_THREAD;
+
+    private static volatile Object mutex = new Object();
 
     private ExecutorManager() {
         this.scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
@@ -57,7 +59,15 @@ public class ExecutorManager {
      * @return the instance
      */
     public static ExecutorManager getInstance() {
-        if (instance == null) instance = new ExecutorManager();
+        System.out.println("creating new executor manager on thread " + Thread.currentThread().getName());
+        ExecutorManager result = instance;
+		if (result == null) {
+			synchronized (mutex) {
+				result = instance;
+				if (result == null)
+					instance = result = new ExecutorManager();
+			}
+		}
         return instance;
     }
 
